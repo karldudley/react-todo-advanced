@@ -9,6 +9,7 @@ function App() {
     const [todos, setTodos] = useState([]);
 
     const [selectedTab, setSelectedTab] = useState('Open');
+    const [editingIndex, setEditingIndex] = useState(null);
 
     function handleAddTodo(newTodo) {
         const newTodoList = [...todos, { input: newTodo, complete: false }];
@@ -34,6 +35,22 @@ function App() {
         handleSaveDate(newTodoList);
     }
 
+    function handleEditTodo(index, newInput) {
+        let newTodoList = [...todos];
+        newTodoList[index] = { ...newTodoList[index], input: newInput };
+        setTodos(newTodoList);
+        setEditingIndex(null);
+        handleSaveDate(newTodoList);
+    }
+
+    function handleStartEdit(index) {
+        setEditingIndex(index);
+    }
+
+    function handleCancelEdit() {
+        setEditingIndex(null);
+    }
+
     function handleSaveDate(currTodos) {
         localStorage.setItem('todo-app', JSON.stringify({ todos: currTodos }));
     }
@@ -57,6 +74,10 @@ function App() {
                 selectedTab={selectedTab}
                 handleDeleteTodo={handleDeleteTodo}
                 handleCompleteTodo={handleCompleteTodo}
+                editingIndex={editingIndex}
+                handleEditTodo={handleEditTodo}
+                handleStartEdit={handleStartEdit}
+                handleCancelEdit={handleCancelEdit}
             />
             <TodoInput handleAddTodo={handleAddTodo} />
         </>
