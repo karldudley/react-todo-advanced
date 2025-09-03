@@ -9,7 +9,8 @@ export default function TodoCard(props) {
         editingIndex,
         handleEditTodo,
         handleStartEdit,
-        handleCancelEdit
+        handleCancelEdit,
+        handleToggleFavorite
     } = props;
     
     const [editInput, setEditInput] = useState(todo.input);
@@ -36,22 +37,41 @@ export default function TodoCard(props) {
 
     return (
         <div className="card todo-item">
-            {isEditing ? (
-                <input
-                    type="text"
-                    value={editInput}
-                    onChange={(e) => setEditInput(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    autoFocus
-                />
-            ) : (
-                <p 
-                    onClick={() => !todo.complete && handleStartEdit(todoIndex)}
-                    style={{ cursor: !todo.complete ? 'pointer' : 'default' }}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                <button
+                    onClick={() => handleToggleFavorite(todoIndex)}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: '16px',
+                        cursor: 'pointer',
+                        color: todo.favorite ? '#FFD700' : '#ccc'
+                    }}
                 >
-                    {todo.input}
-                </p>
-            )}
+                    ★
+                </button>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={editInput}
+                        onChange={(e) => setEditInput(e.target.value)}
+                        onKeyDown={handleKeyPress}
+                        autoFocus
+                        style={{ flex: 1 }}
+                    />
+                ) : (
+                    <p 
+                        onClick={() => !todo.complete && handleStartEdit(todoIndex)}
+                        style={{ 
+                            cursor: !todo.complete ? 'pointer' : 'default',
+                            margin: 0,
+                            flex: 1
+                        }}
+                    >
+                        {todo.input}
+                    </p>
+                )}
+            </div>
             
             <div className="todo-buttons">
                 {isEditing ? (

@@ -9,9 +9,16 @@ export default function (props) {
             : selectedTab === 'Completed'
             ? todos.filter((val) => val.complete)
             : todos.filter((val) => !val.complete);
+    
+    // Sort filtered todos with favorites at the top
+    const sortedTodoList = filterTodoList.sort((a, b) => {
+        if (a.favorite && !b.favorite) return -1;
+        if (!a.favorite && b.favorite) return 1;
+        return 0;
+    });
     return (
         <>
-            {filterTodoList.map((todo, todoIndex) => {
+            {sortedTodoList.map((todo, todoIndex) => {
                 return (
                     <TodoCard
                         key={todoIndex}

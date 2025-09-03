@@ -12,7 +12,7 @@ function App() {
     const [editingIndex, setEditingIndex] = useState(null);
 
     function handleAddTodo(newTodo) {
-        const newTodoList = [...todos, { input: newTodo, complete: false }];
+        const newTodoList = [...todos, { input: newTodo, complete: false, favorite: false }];
         setTodos(newTodoList);
         handleSaveDate(newTodoList);
     }
@@ -51,6 +51,13 @@ function App() {
         setEditingIndex(null);
     }
 
+    function handleToggleFavorite(index) {
+        let newTodoList = [...todos];
+        newTodoList[index] = { ...newTodoList[index], favorite: !newTodoList[index].favorite };
+        setTodos(newTodoList);
+        handleSaveDate(newTodoList);
+    }
+
     function handleSaveDate(currTodos) {
         localStorage.setItem('todo-app', JSON.stringify({ todos: currTodos }));
     }
@@ -78,6 +85,7 @@ function App() {
                 handleEditTodo={handleEditTodo}
                 handleStartEdit={handleStartEdit}
                 handleCancelEdit={handleCancelEdit}
+                handleToggleFavorite={handleToggleFavorite}
             />
             <TodoInput handleAddTodo={handleAddTodo} />
         </>
