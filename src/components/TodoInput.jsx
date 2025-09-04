@@ -8,7 +8,7 @@ export default function TodoInput(props) {
     const handleSubmit = (e) => {
         e.preventDefault(); // Prevent page reload
         if (!inputValue.trim()) return; // Prevent adding empty tasks
-        handleAddTodo(inputValue);
+        handleAddTodo(inputValue.trim());
         setInputValue('');
     };
 
@@ -17,10 +17,12 @@ export default function TodoInput(props) {
             <input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Add task"
+                placeholder="Add a new task..."
+                className="todo-input"
+                autoComplete="off"
             />
-            <button type="submit">
-                <i className="fa-solid fa-plus"></i>
+            <button type="submit" className="btn-add">
+                + Add Task
             </button>
         </form>
     );
