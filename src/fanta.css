@@ -63,6 +63,25 @@
     --text-selection: '';
 }
 
+/* Manual dark mode override - only changed variables */
+.dark {
+    --background-primary: #05070f;
+    --background-secondary: #0e101e;
+    --background-tertiary: #121424;
+    --background-muted: #1a1e32;
+
+    --color-primary: white;
+    --color-link: #60a5fa;
+    --color-link-transparent: rgba(37, 99, 235, 0.1);
+
+    --border-primary: #29325b;
+    --border-secondary: #323c71;
+    --border-highlight: #4649af;
+
+    --gradient-start: #9580ff;
+    --gradient-end: #80ffea;
+}
+
 @media (prefers-color-scheme: dark) {
     :root {
         --background-primary: #05070f;
