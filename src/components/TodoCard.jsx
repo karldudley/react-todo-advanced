@@ -36,20 +36,8 @@ export default function TodoCard(props) {
     };
 
     return (
-        <div className="card todo-item">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-                <button
-                    onClick={() => handleToggleFavorite(todoIndex)}
-                    style={{
-                        background: 'none',
-                        border: 'none',
-                        fontSize: '16px',
-                        cursor: 'pointer',
-                        color: todo.favorite ? '#FFD700' : '#ccc'
-                    }}
-                >
-                    ★
-                </button>
+        <div className={`todo-item ${todo.complete ? 'todo-complete' : ''} ${todo.favorite ? 'todo-favorite' : ''}`}>
+            <div className="todo-content">
                 {isEditing ? (
                     <input
                         type="text"
@@ -57,42 +45,52 @@ export default function TodoCard(props) {
                         onChange={(e) => setEditInput(e.target.value)}
                         onKeyDown={handleKeyPress}
                         autoFocus
-                        style={{ flex: 1 }}
+                        className="todo-text"
                     />
                 ) : (
-                    <p 
+                    <div 
                         onClick={() => !todo.complete && handleStartEdit(todoIndex)}
-                        style={{ 
-                            cursor: !todo.complete ? 'pointer' : 'default',
-                            margin: 0,
-                            flex: 1
-                        }}
+                        className="todo-text"
+                        style={{ cursor: !todo.complete ? 'pointer' : 'default' }}
                     >
                         {todo.input}
-                    </p>
+                    </div>
                 )}
             </div>
             
-            <div className="todo-buttons">
+            <div className="todo-actions">
                 {isEditing ? (
                     <>
-                        <button onClick={handleSave}>
-                            <h6>Save</h6>
+                        <button onClick={handleSave} className="btn-complete">
+                            ✓ Save
                         </button>
-                        <button onClick={handleCancel}>
-                            <h6>Cancel</h6>
+                        <button onClick={handleCancel} className="btn-delete">
+                            ✕ Cancel
                         </button>
                     </>
                 ) : (
                     <>
                         <button
+                            onClick={() => handleToggleFavorite(todoIndex)}
+                            className={`btn-star ${todo.favorite ? 'starred' : ''}`}
+                            title={todo.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                            ★
+                        </button>
+                        <button
                             onClick={() => handleCompleteTodo(todoIndex)}
                             disabled={todo.complete}
+                            className="btn-complete"
+                            title="Mark as complete"
                         >
-                            <h6>Done</h6>
+                            ✓ Done
                         </button>
-                        <button onClick={() => handleDeleteTodo(todoIndex)}>
-                            <h6>Delete</h6>
+                        <button 
+                            onClick={() => handleDeleteTodo(todoIndex)} 
+                            className="btn-delete"
+                            title="Delete todo"
+                        >
+                            ✕ Delete
                         </button>
                     </>
                 )}

@@ -1,8 +1,7 @@
-import React from 'react';
-
 export default function Tabs(props) {
     const { todos, selectedTab, setSelectedTab } = props;
     const tabs = ['All', 'Open', 'Completed'];
+    
     return (
         <nav className="tab-container">
             {tabs.map((tab, tabIndex) => {
@@ -15,22 +14,15 @@ export default function Tabs(props) {
 
                 return (
                     <button
-                        onClick={() => {
-                            setSelectedTab(tab);
-                        }}
+                        onClick={() => setSelectedTab(tab)}
                         key={tabIndex}
-                        className={
-                            'tab-button' +
-                            (tab === selectedTab ? ' tab-selected' : ' ')
-                        }
+                        className={`tab-button ${tab === selectedTab ? 'tab-selected' : ''}`}
                     >
-                        <h4>
-                            {tab} <span>({numOfTasks})</span>
-                        </h4>
+                        {tab}
+                        <span>{numOfTasks}</span>
                     </button>
                 );
             })}
-            <hr />
         </nav>
     );
 }
