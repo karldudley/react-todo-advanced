@@ -16,12 +16,13 @@ export default function Header(props) {
     }, [isDark]);
 
     return (
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h1 className="text-gradient">
+        <header>
+            <h1>
                 You have {todosLength} open {taskOrTasks}
             </h1>
-            <button onClick={toggleTheme}>
-                {isDark ? '☀️' : '🌙'}
+            <button onClick={toggleTheme} className="theme-toggle">
+                <span>{isDark ? '☀️' : '🌙'}</span>
+                <span>{isDark ? 'Light' : 'Dark'}</span>
             </button>
         </header>
     );
