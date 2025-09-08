@@ -4,12 +4,15 @@ import Header from './components/Header';
 import Tabs from './components/Tabs';
 import TodoInput from './components/TodoInput';
 import TodoList from './components/TodoList';
+import ConfirmationModal from './components/ConfirmationModal';
 
 function App() {
     const [todos, setTodos] = useState([]);
 
     const [selectedTab, setSelectedTab] = useState('Open');
     const [editingIndex, setEditingIndex] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [todoToDelete, setTodoToDelete] = useState(null);
 
     function handleAddTodo(newTodo) {
         const newTodoList = [...todos, { input: newTodo, complete: false, favorite: false }];
@@ -28,11 +31,25 @@ function App() {
     }
 
     function handleDeleteTodo(index) {
-        let newTodoList = todos.filter((val, valIndex) => {
-            return valIndex !== index;
-        });
-        setTodos(newTodoList);
-        handleSaveDate(newTodoList);
+        setTodoToDelete({ index, text: todos[index].input });
+        setShowDeleteModal(true);
+    }
+
+    function confirmDeleteTodo() {
+        if (todoToDelete) {
+            let newTodoList = todos.filter((val, valIndex) => {
+                return valIndex !== todoToDelete.index;
+            });
+            setTodos(newTodoList);
+            handleSaveDate(newTodoList);
+        }
+        setShowDeleteModal(false);
+        setTodoToDelete(null);
+    }
+
+    function cancelDeleteTodo() {
+        setShowDeleteModal(false);
+        setTodoToDelete(null);
     }
 
     function handleEditTodo(index, newInput) {
@@ -65,7 +82,6 @@ function App() {
     useEffect(() => {
         if (!localStorage || !localStorage.getItem('todo-app')) return;
         let db = JSON.parse(localStorage.getItem('todo-app'));
-        console.log(db);
         setTodos(db.todos);
     }, []);
 
@@ -88,6 +104,12 @@ function App() {
                 handleStartEdit={handleStartEdit}
                 handleCancelEdit={handleCancelEdit}
                 handleToggleFavorite={handleToggleFavorite}
+            />
+            <ConfirmationModal
+                isOpen={showDeleteModal}
+                todoText={todoToDelete?.text || ''}
+                onConfirm={confirmDeleteTodo}
+                onCancel={cancelDeleteTodo}
             />
         </>
     );
