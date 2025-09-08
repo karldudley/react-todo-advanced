@@ -65,6 +65,7 @@ function App() {
     useEffect(() => {
         if (!localStorage || !localStorage.getItem('todo-app')) return;
         let db = JSON.parse(localStorage.getItem('todo-app'));
+        console.log(db);
         setTodos(db.todos);
     }, []);
 
@@ -76,6 +77,7 @@ function App() {
                 setSelectedTab={setSelectedTab}
                 todos={todos}
             />
+            <TodoInput handleAddTodo={handleAddTodo} />
             <TodoList
                 todos={todos}
                 selectedTab={selectedTab}
@@ -87,7 +89,6 @@ function App() {
                 handleCancelEdit={handleCancelEdit}
                 handleToggleFavorite={handleToggleFavorite}
             />
-            <TodoInput handleAddTodo={handleAddTodo} />
         </>
     );
 }

@@ -11,9 +11,12 @@ export default function TodoList(props) {
     
     // Sort filtered todos with favorites at the top
     const sortedTodoList = filterTodoList.sort((a, b) => {
+        // First priority: favorites
         if (a.favorite && !b.favorite) return -1;
         if (!a.favorite && b.favorite) return 1;
-        return 0;
+
+        // Second priority: newest first (reverse order)
+        return todos.indexOf(b) - todos.indexOf(a);
     });
     
     return (
