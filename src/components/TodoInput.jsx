@@ -21,7 +21,7 @@ export default function TodoInput(props) {
                 className="todo-input"
                 autoComplete="off"
             />
-            <button type="submit" className="btn-add">
+            <button type="submit" className="btn-add" title="Add new task">
                 + Add Task
             </button>
         </form>

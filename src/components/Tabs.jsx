@@ -16,6 +16,7 @@ export default function Tabs(props) {
                     <button
                         onClick={() => setSelectedTab(tab)}
                         key={tabIndex}
+                        title={`Show ${tab.toLowerCase() == 'all' && numOfTasks == 1 ? '' : tab.toLowerCase()} task${numOfTasks !== 1 ? 's' : ''}`}
                         className={`tab-button ${tab === selectedTab ? 'tab-selected' : ''}`}
                     >
                         {tab}
