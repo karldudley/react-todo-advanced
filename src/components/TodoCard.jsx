@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function TodoCard(props) {
     const { 
@@ -15,6 +15,12 @@ export default function TodoCard(props) {
     
     const [editInput, setEditInput] = useState(todo.input);
     const isEditing = editingIndex === todoIndex;
+
+    useEffect(() => {
+        if (isEditing) {
+            setEditInput(todo.input);
+        }
+    }, [isEditing, todo.input]);
 
     const handleSave = () => {
         if (editInput.trim()) {
@@ -50,10 +56,11 @@ export default function TodoCard(props) {
                 ) : (
                     <div 
                         onClick={() => !todo.complete && handleStartEdit(todoIndex)}
-                        className="todo-text"
-                        style={{ cursor: !todo.complete ? 'pointer' : 'default' }}
+                        className={`todo-text ${!todo.complete ? 'editable' : ''}`}
+                        title={!todo.complete ? 'Click to edit' : ''}
                     >
                         {todo.input}
+                        {!todo.complete && <span className="edit-indicator">✏️</span>}
                     </div>
                 )}
             </div>
