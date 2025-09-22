@@ -115,21 +115,19 @@ header {
 .theme-toggle {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  justify-content: center;
+  padding: var(--space-sm);
+  background: transparent;
+  border: none;
   border-radius: var(--radius-lg);
   color: var(--text-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-size: var(--font-size-lg);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .theme-toggle:hover {
   background: var(--bg-tertiary);
-  border-color: var(--accent-blue);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }

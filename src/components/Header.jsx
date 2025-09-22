@@ -21,8 +21,7 @@ export default function Header(props) {
                 You have {todosLength} open {taskOrTasks}
             </h1>
             <button onClick={toggleTheme} className="theme-toggle" title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
-                <span>{isDark ? '☀️' : '🌙'}</span>
-                <span>{isDark ? 'Light' : 'Dark'}</span>
+                {isDark ? '☀️' : '🌙'}
             </button>
         </header>
     );

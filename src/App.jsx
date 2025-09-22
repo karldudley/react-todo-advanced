@@ -14,8 +14,8 @@ function App() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [todoToDelete, setTodoToDelete] = useState(null);
 
-    function handleAddTodo(newTodo) {
-        const newTodoList = [...todos, { input: newTodo, complete: false, favorite: false }];
+    function handleAddTodo(newTodo, isStarred = false) {
+        const newTodoList = [...todos, { input: newTodo, complete: false, favorite: isStarred }];
         setTodos(newTodoList);
         handleSaveDate(newTodoList);
     }
