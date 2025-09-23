@@ -17,19 +17,34 @@ function RewardGame() {
     const [choiceOne, setChoiceOne] = useState(null);
     const [choiceTwo, setChoiceTwo] = useState(null);
     const [disabled, setDisabled] = useState(false);
+    const [personalBest, setPersonalBest] = useState(null);
 
     useEffect(() => {
         if (choiceOne && choiceTwo) {
             setDisabled(true);
             if (choiceOne.src === choiceTwo.src) {
                 setCards((prevCards) => {
-                    return prevCards.map((card) => {
+                    const updatedCards = prevCards.map((card) => {
                         if (card.src === choiceOne.src) {
                             return { ...card, matched: true };
                         } else {
                             return card;
                         }
                     });
+                    
+                    // Check if this was the final match
+                    const allMatched = updatedCards.every(card => card.matched);
+                    if (allMatched) {
+                        // Game complete! Check PB after the turn is incremented
+                        setTimeout(() => {
+                            const finalTurns = turns + 1;
+                            if (personalBest === null || finalTurns < personalBest) {
+                                savePersonalBest(finalTurns);
+                            }
+                        }, 1000);
+                    }
+                    
+                    return updatedCards;
                 });
                 console.log('Those cards match!');
             } else {
@@ -39,7 +54,7 @@ function RewardGame() {
                 resetTurn();
             }, 1000);
         }
-    }, [choiceOne, choiceTwo]);
+    }, [choiceOne, choiceTwo, turns, personalBest]);
 
     console.log(cards);
 
@@ -64,17 +79,32 @@ function RewardGame() {
         choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
     };
 
+    const loadPersonalBest = () => {
+        const savedData = localStorage.getItem('todo-app');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            if (data.gamePB) {
+                setPersonalBest(data.gamePB);
+            }
+        }
+    };
+
+    const savePersonalBest = (score) => {
+        const savedData = localStorage.getItem('todo-app');
+        let data = savedData ? JSON.parse(savedData) : {};
+        data.gamePB = score;
+        localStorage.setItem('todo-app', JSON.stringify(data));
+        setPersonalBest(score);
+    };
+
     useEffect(() => {
         shuffleCards();
+        loadPersonalBest();
     }, []);
 
     return (
         <div className="reward-game">
             <div className="reward-container">
-                <h2 className="reward-title">🎉 All Tasks Complete! 🎉</h2>
-                <button onClick={shuffleCards} className="btn-new-game">
-                    New Game
-                </button>
                 <div className="card-grid">
                     {cards.map((card) => (
                         <SingleCard
@@ -90,7 +120,13 @@ function RewardGame() {
                         />
                     ))}
                 </div>
-                <p className="turns-counter">Turns: {turns}</p>
+                <div className="game-footer">
+                    <p className="turns-counter">Turns: {turns}</p>
+                    <p className="turns-counter">Lowest Turns: {personalBest !== null ? personalBest : '--'}</p>
+                    <button onClick={shuffleCards} className="btn-new-game">
+                        New Game
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -526,16 +526,14 @@ input:focus {
 
 /* Reward Game */
 .reward-container {
-    margin-top: var(--space-xl);
     text-align: center;
     animation: slideIn 0.3s ease-out;
 }
 
-.reward-title {
-    font-size: var(--font-size-2xl);
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: var(--space-lg);
+.game-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .btn-new-game {
@@ -548,7 +546,6 @@ input:focus {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: var(--space-lg);
 }
 
 .btn-new-game:hover {
@@ -565,7 +562,7 @@ input:focus {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--space-md);
-    margin: var(--space-xl) 0;
+    margin-bottom: var(--space-xl);
     width: 100%;
 }
 
@@ -573,7 +570,6 @@ input:focus {
     font-size: var(--font-size-lg);
     font-weight: 600;
     color: var(--text-secondary);
-    margin-top: var(--space-lg);
 }
 
 /* Card styles */
@@ -625,14 +621,13 @@ input:focus {
     transition-delay: 0s;
 }
 
-
 /* Responsive adjustments for game */
 @media (max-width: 768px) {
     .card-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: var(--space-sm);
     }
-    
+
     .reward-title {
         font-size: var(--font-size-xl);
     }
