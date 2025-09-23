@@ -608,6 +608,9 @@ input:focus {
 .flipped .front {
     transform: rotateY(0deg);
     transition-delay: 0.2s;
+}
+
+.flipped.matched .front {
     outline: 3px solid var(--accent-amber);
 }
 

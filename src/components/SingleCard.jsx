@@ -10,7 +10,7 @@ export default function SingleCard({ card, handleChoice, flipped, disabled }) {
 
     return (
         <div key={card.id} className="card">
-            <div className={flipped ? 'flipped' : ''}>
+            <div className={`${flipped ? 'flipped' : ''} ${card.matched ? 'matched' : ''}`}>
                 <img src={card.src} alt="card front" className="front" />
                 <img
                     src="/img/cover.png"
