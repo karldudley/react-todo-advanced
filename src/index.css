@@ -608,6 +608,7 @@ input:focus {
 .flipped .front {
     transform: rotateY(0deg);
     transition-delay: 0.2s;
+    outline: 3px solid var(--accent-amber);
 }
 
 .card .back {
