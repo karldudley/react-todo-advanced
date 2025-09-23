@@ -17,7 +17,10 @@ function App() {
     const [showGame, setShowGame] = useState(false);
 
     function handleAddTodo(newTodo, isStarred = false) {
-        const newTodoList = [...todos, { input: newTodo, complete: false, favorite: isStarred }];
+        const newTodoList = [
+            ...todos,
+            { input: newTodo, complete: false, favorite: isStarred },
+        ];
         setTodos(newTodoList);
         handleSaveDate(newTodoList);
     }
@@ -72,7 +75,10 @@ function App() {
 
     function handleToggleFavorite(index) {
         let newTodoList = [...todos];
-        newTodoList[index] = { ...newTodoList[index], favorite: !newTodoList[index].favorite };
+        newTodoList[index] = {
+            ...newTodoList[index],
+            favorite: !newTodoList[index].favorite,
+        };
         setTodos(newTodoList);
         handleSaveDate(newTodoList);
     }
@@ -91,18 +97,24 @@ function App() {
         setTodos(db.todos);
     }, []);
 
-    const allTasksComplete = todos.length > 0 && todos.every(todo => todo.complete);
+    const allTasksComplete =
+        todos.length > 0 && todos.every((todo) => todo.complete);
     const shouldShowGame = showGame || allTasksComplete;
 
     return (
         <>
-            <Header todos={todos} showGame={showGame} onToggleGame={handleToggleGame} />
+            <Header
+                todos={todos}
+                showGame={showGame}
+                onToggleGame={handleToggleGame}
+            />
             <Tabs
                 selectedTab={selectedTab}
                 setSelectedTab={setSelectedTab}
                 todos={todos}
             />
             <TodoInput handleAddTodo={handleAddTodo} />
+            {shouldShowGame && <RewardGame />}
             <TodoList
                 todos={todos}
                 selectedTab={selectedTab}
@@ -114,7 +126,6 @@ function App() {
                 handleCancelEdit={handleCancelEdit}
                 handleToggleFavorite={handleToggleFavorite}
             />
-            {shouldShowGame && <RewardGame />}
             <ConfirmationModal
                 isOpen={showDeleteModal}
                 todoText={todoToDelete?.text || ''}
