@@ -5,6 +5,7 @@ import Tabs from './components/Tabs';
 import TodoInput from './components/TodoInput';
 import TodoList from './components/TodoList';
 import ConfirmationModal from './components/ConfirmationModal';
+import RewardGame from './components/RewardGame';
 
 function App() {
     const [todos, setTodos] = useState([]);
@@ -13,6 +14,7 @@ function App() {
     const [editingIndex, setEditingIndex] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [todoToDelete, setTodoToDelete] = useState(null);
+    const [showGame, setShowGame] = useState(false);
 
     function handleAddTodo(newTodo, isStarred = false) {
         const newTodoList = [...todos, { input: newTodo, complete: false, favorite: isStarred }];
@@ -75,6 +77,10 @@ function App() {
         handleSaveDate(newTodoList);
     }
 
+    function handleToggleGame() {
+        setShowGame(!showGame);
+    }
+
     function handleSaveDate(currTodos) {
         localStorage.setItem('todo-app', JSON.stringify({ todos: currTodos }));
     }
@@ -85,9 +91,12 @@ function App() {
         setTodos(db.todos);
     }, []);
 
+    const allTasksComplete = todos.length > 0 && todos.every(todo => todo.complete);
+    const shouldShowGame = showGame || allTasksComplete;
+
     return (
         <>
-            <Header todos={todos} />
+            <Header todos={todos} showGame={showGame} onToggleGame={handleToggleGame} />
             <Tabs
                 selectedTab={selectedTab}
                 setSelectedTab={setSelectedTab}
@@ -105,6 +114,7 @@ function App() {
                 handleCancelEdit={handleCancelEdit}
                 handleToggleFavorite={handleToggleFavorite}
             />
+            {shouldShowGame && <RewardGame />}
             <ConfirmationModal
                 isOpen={showDeleteModal}
                 todoText={todoToDelete?.text || ''}
