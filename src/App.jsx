@@ -88,7 +88,10 @@ function App() {
     }
 
     function handleSaveDate(currTodos) {
-        localStorage.setItem('todo-app', JSON.stringify({ todos: currTodos }));
+        const existingData = localStorage.getItem('todo-app');
+        let data = existingData ? JSON.parse(existingData) : {};
+        data.todos = currTodos;
+        localStorage.setItem('todo-app', JSON.stringify(data));
     }
 
     useEffect(() => {
