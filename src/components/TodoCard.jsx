@@ -86,11 +86,10 @@ export default function TodoCard(props) {
                         </button>
                         <button
                             onClick={() => handleCompleteTodo(todoIndex)}
-                            disabled={todo.complete}
                             className="btn-complete"
-                            title="Mark as complete"
+                            title={todo.complete ? "Mark as incomplete" : "Mark as complete"}
                         >
-                            ✓ Done
+                            ✓ {todo.complete ? 'Undo' : 'Done'}
                         </button>
                         <button 
                             onClick={() => handleDeleteTodo(todoIndex)} 
