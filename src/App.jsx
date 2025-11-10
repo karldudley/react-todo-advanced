@@ -137,8 +137,9 @@ function App() {
             if (error) {
                 console.error('Error updating todo:', error);
             } else {
-                // Re-fetch to maintain consistent ordering
-                fetchTodosFromSupabase();
+                let newTodoList = [...todos];
+                newTodoList[index] = { ...todo, complete: !todo.complete };
+                setTodos(newTodoList);
             }
         } else {
             // Update in localStorage
@@ -168,8 +169,10 @@ function App() {
                 if (error) {
                     console.error('Error deleting todo:', error);
                 } else {
-                    // Re-fetch to maintain consistent ordering
-                    fetchTodosFromSupabase();
+                    let newTodoList = todos.filter(
+                        (val, valIndex) => valIndex !== todoToDelete.index
+                    );
+                    setTodos(newTodoList);
                 }
             } else {
                 // Delete from localStorage
@@ -202,8 +205,9 @@ function App() {
             if (error) {
                 console.error('Error updating todo:', error);
             } else {
-                // Re-fetch to maintain consistent ordering
-                fetchTodosFromSupabase();
+                let newTodoList = [...todos];
+                newTodoList[index] = { ...todo, input: newInput };
+                setTodos(newTodoList);
                 setEditingIndex(null);
             }
         } else {
@@ -237,8 +241,9 @@ function App() {
             if (error) {
                 console.error('Error updating todo:', error);
             } else {
-                // Re-fetch to maintain consistent ordering
-                fetchTodosFromSupabase();
+                let newTodoList = [...todos];
+                newTodoList[index] = { ...todo, favorite: !todo.favorite };
+                setTodos(newTodoList);
             }
         } else {
             // Update in localStorage
