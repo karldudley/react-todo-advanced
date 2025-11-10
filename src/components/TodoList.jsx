@@ -8,9 +8,10 @@ export default function TodoList(props) {
             : selectedTab === 'Completed'
             ? todos.filter((val) => val.complete)
             : todos.filter((val) => !val.complete);
-    
+
     // Sort filtered todos with favorites at the top
-    const sortedTodoList = filterTodoList.sort((a, b) => {
+    // Create a copy before sorting to avoid mutating the original array
+    const sortedTodoList = [...filterTodoList].sort((a, b) => {
         // First priority: favorites
         if (a.favorite && !b.favorite) return -1;
         if (!a.favorite && b.favorite) return 1;
