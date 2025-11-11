@@ -14,8 +14,14 @@ export default function Header(props) {
     const toggleTheme = () => setIsDark(!isDark);
 
     const handleSignOut = async () => {
-        await signOut();
-        window.location.reload(); // Refresh to show auth screen
+        const { error } = await signOut();
+        if (error) {
+            console.error('Error signing out:', error);
+        } else {
+            // Clear localStorage and reload
+            localStorage.removeItem('todo-app');
+            window.location.href = window.location.origin;
+        }
     };
 
     useEffect(() => {
