@@ -12,7 +12,7 @@ import { supabase } from './lib/supabase';
 
 function App() {
     const { user, loading } = useAuth();
-    const [guestMode, setGuestMode] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
     const [todos, setTodos] = useState([]);
 
     const [selectedTab, setSelectedTab] = useState('Open');
@@ -21,8 +21,12 @@ function App() {
     const [todoToDelete, setTodoToDelete] = useState(null);
     const [showGame, setShowGame] = useState(false);
 
-    const handleSkipAuth = () => {
-        setGuestMode(true);
+    const handleShowAuth = () => {
+        setShowAuthModal(true);
+    };
+
+    const handleCloseAuth = () => {
+        setShowAuthModal(false);
     };
 
     // Fetch todos from Supabase or localStorage
@@ -30,13 +34,13 @@ function App() {
         if (user) {
             // Migrate localStorage todos if they exist, then fetch from Supabase
             migrateLocalStorageToSupabase();
-        } else if (guestMode) {
-            // Load from localStorage for guest users
+        } else {
+            // Load from localStorage for non-authenticated users
             if (!localStorage || !localStorage.getItem('todo-app')) return;
             let db = JSON.parse(localStorage.getItem('todo-app'));
             setTodos(db.todos || []);
         }
-    }, [user, guestMode]);
+    }, [user]);
 
     async function migrateLocalStorageToSupabase() {
         // Check if there are todos in localStorage
@@ -284,18 +288,14 @@ function App() {
         );
     }
 
-    // Show Auth screen if not logged in and not in guest mode
-    if (!user && !guestMode) {
-        return <Auth onSkip={handleSkipAuth} />;
-    }
-
-    // Show main app if logged in or in guest mode
+    // Always show main app
     return (
         <>
             <Header
                 todos={todos}
                 showGame={showGame}
                 onToggleGame={handleToggleGame}
+                onShowAuth={handleShowAuth}
             />
             <Tabs
                 selectedTab={selectedTab}
@@ -321,6 +321,9 @@ function App() {
                 onConfirm={confirmDeleteTodo}
                 onCancel={cancelDeleteTodo}
             />
+            {showAuthModal && (
+                <Auth onClose={handleCloseAuth} />
+            )}
         </>
     );
 }

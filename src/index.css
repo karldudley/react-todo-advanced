@@ -667,15 +667,75 @@ input:focus {
     }
 }
 
-/* Authentication Styles */
-.auth-container {
+/* Create Account Button */
+.create-account-btn {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--accent-blue);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.create-account-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+/* Authentication Modal Styles */
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: var(--space-lg);
+}
+
+.auth-modal {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    padding: var(--space-xl) var(--space-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: var(--space-xl);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    gap: var(--space-xl);
+    border-radius: var(--radius-lg);
+    gap: var(--space-lg);
+}
+
+.auth-close-btn {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1.5rem;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
 .auth-brand {
@@ -811,34 +871,4 @@ input:focus {
 .auth-toggle-btn:hover {
     color: #2563eb;
     text-decoration: underline;
-}
-
-.auth-skip {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--border);
-    text-align: center;
-}
-
-.auth-skip-btn {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: var(--space-md);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    width: 100%;
-}
-
-.auth-skip-btn:hover {
-    background: var(--bg-tertiary);
-    border-color: var(--text-secondary);
-}
-
-.auth-skip-note {
-    margin-top: var(--space-sm);
-    font-size: 0.75rem;
-    color: var(--text-muted);
 }

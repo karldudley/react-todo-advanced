@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Header(props) {
-    const { todos, showGame, onToggleGame } = props;
+    const { todos, showGame, onToggleGame, onShowAuth } = props;
     const { user, signOut } = useAuth();
     const todosLength = todos.filter(todo => !todo.complete).length;
     const taskOrTasks = todosLength === 1 ? 'task' : 'tasks';
@@ -28,9 +28,13 @@ export default function Header(props) {
                 You have {todosLength} open {taskOrTasks}
             </h1>
             <div className="header-toggles">
-                {user && (
+                {user ? (
                     <button onClick={handleSignOut} className="sign-out-btn" title="Sign out">
                         Sign Out
+                    </button>
+                ) : (
+                    <button onClick={onShowAuth} className="create-account-btn" title="Sync todos across devices!">
+                        Create Account
                     </button>
                 )}
                 <button onClick={onToggleGame} className="theme-toggle" title={showGame ? 'Hide game' : 'Show game'}>
