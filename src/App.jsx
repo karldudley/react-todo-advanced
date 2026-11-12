@@ -9,6 +9,7 @@ import RewardGame from './components/RewardGame';
 import Auth from './components/Auth';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabase';
+import { topPosition, withIdAndPosition } from './lib/todos';
 
 function App() {
     const { user, loading } = useAuth();
@@ -16,7 +17,7 @@ function App() {
     const [todos, setTodos] = useState([]);
 
     const [selectedTab, setSelectedTab] = useState('Open');
-    const [editingIndex, setEditingIndex] = useState(null);
+    const [editingId, setEditingId] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [todoToDelete, setTodoToDelete] = useState(null);
     const [showGame, setShowGame] = useState(false);
@@ -38,7 +39,9 @@ function App() {
             // Load from localStorage for non-authenticated users
             if (!localStorage || !localStorage.getItem('todo-app')) return;
             let db = JSON.parse(localStorage.getItem('todo-app'));
-            setTodos(db.todos || []);
+            const localTodos = withIdAndPosition(db.todos || []);
+            setTodos(localTodos);
+            handleSaveToLocalStorage(localTodos);
         }
     }, [user]);
 
@@ -49,7 +52,7 @@ function App() {
         if (localData) {
             try {
                 const parsedData = JSON.parse(localData);
-                const localTodos = parsedData.todos || [];
+                const localTodos = withIdAndPosition(parsedData.todos || []);
 
                 if (localTodos.length > 0) {
                     console.log(`Migrating ${localTodos.length} todos from localStorage to Supabase...`);
@@ -60,6 +63,7 @@ function App() {
                         input: todo.input,
                         complete: todo.complete || false,
                         favorite: todo.favorite || false,
+                        position: todo.position,
                     }));
 
                     // Insert all todos into Supabase
@@ -88,7 +92,7 @@ function App() {
         const { data, error } = await supabase
             .from('todos')
             .select('*')
-            .order('created_at', { ascending: false });
+            .order('position', { ascending: true });
 
         if (error) {
             console.error('Error fetching todos:', error);
@@ -98,6 +102,8 @@ function App() {
     }
 
     async function handleAddTodo(newTodo, isStarred = false) {
+        const position = topPosition(todos);
+
         if (user) {
             // Add to Supabase
             const { data, error } = await supabase
@@ -108,6 +114,7 @@ function App() {
                         input: newTodo,
                         complete: false,
                         favorite: isStarred,
+                        position,
                     },
                 ])
                 .select();
@@ -121,68 +128,74 @@ function App() {
             // Add to localStorage
             const newTodoList = [
                 ...todos,
-                { input: newTodo, complete: false, favorite: isStarred },
+                {
+                    id: crypto.randomUUID(),
+                    input: newTodo,
+                    complete: false,
+                    favorite: isStarred,
+                    position,
+                },
             ];
             setTodos(newTodoList);
             handleSaveToLocalStorage(newTodoList);
         }
     }
 
-    async function handleCompleteTodo(index) {
-        const todo = todos[index];
+    // Apply changes straight away, undo them if Supabase rejects the update
+    async function updateTodo(id, changes) {
+        const previousTodos = todos;
+        const newTodoList = todos.map((todo) =>
+            todo.id === id ? { ...todo, ...changes } : todo
+        );
+        setTodos(newTodoList);
 
-        if (user) {
-            // Update in Supabase
-            const { error } = await supabase
-                .from('todos')
-                .update({ complete: !todo.complete })
-                .eq('id', todo.id);
-
-            if (error) {
-                console.error('Error updating todo:', error);
-            } else {
-                let newTodoList = [...todos];
-                newTodoList[index] = { ...todo, complete: !todo.complete };
-                setTodos(newTodoList);
-            }
-        } else {
-            // Update in localStorage
-            let newTodoList = [...todos];
-            newTodoList[index] = { ...todo, complete: !todo.complete };
-            setTodos(newTodoList);
+        if (!user) {
             handleSaveToLocalStorage(newTodoList);
+            return;
+        }
+
+        const { error } = await supabase
+            .from('todos')
+            .update(changes)
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating todo:', error);
+            setTodos(previousTodos);
         }
     }
 
-    function handleDeleteTodo(index) {
-        setTodoToDelete({ index, text: todos[index].input });
+    function handleCompleteTodo(id) {
+        const todo = todos.find((val) => val.id === id);
+        updateTodo(id, { complete: !todo.complete });
+    }
+
+    function handleDeleteTodo(id) {
+        const todo = todos.find((val) => val.id === id);
+        setTodoToDelete({ id, text: todo.input });
         setShowDeleteModal(true);
     }
 
     async function confirmDeleteTodo() {
         if (todoToDelete) {
-            const todo = todos[todoToDelete.index];
+            const newTodoList = todos.filter(
+                (val) => val.id !== todoToDelete.id
+            );
 
             if (user) {
                 // Delete from Supabase
                 const { error } = await supabase
                     .from('todos')
                     .delete()
-                    .eq('id', todo.id);
+                    .eq('id', todoToDelete.id);
 
                 if (error) {
                     console.error('Error deleting todo:', error);
                 } else {
-                    let newTodoList = todos.filter(
-                        (val, valIndex) => valIndex !== todoToDelete.index
-                    );
                     setTodos(newTodoList);
                 }
             } else {
                 // Delete from localStorage
-                let newTodoList = todos.filter(
-                    (val, valIndex) => valIndex !== todoToDelete.index
-                );
                 setTodos(newTodoList);
                 handleSaveToLocalStorage(newTodoList);
             }
@@ -196,66 +209,30 @@ function App() {
         setTodoToDelete(null);
     }
 
-    async function handleEditTodo(index, newInput) {
-        const todo = todos[index];
-
-        if (user) {
-            // Update in Supabase
-            const { error } = await supabase
-                .from('todos')
-                .update({ input: newInput })
-                .eq('id', todo.id);
-
-            if (error) {
-                console.error('Error updating todo:', error);
-            } else {
-                let newTodoList = [...todos];
-                newTodoList[index] = { ...todo, input: newInput };
-                setTodos(newTodoList);
-                setEditingIndex(null);
-            }
-        } else {
-            // Update in localStorage
-            let newTodoList = [...todos];
-            newTodoList[index] = { ...todo, input: newInput };
-            setTodos(newTodoList);
-            setEditingIndex(null);
-            handleSaveToLocalStorage(newTodoList);
-        }
+    function handleEditTodo(id, newInput) {
+        updateTodo(id, { input: newInput });
+        setEditingId(null);
     }
 
-    function handleStartEdit(index) {
-        setEditingIndex(index);
+    function handleStartEdit(id) {
+        setEditingId(id);
     }
 
     function handleCancelEdit() {
-        setEditingIndex(null);
+        setEditingId(null);
     }
 
-    async function handleToggleFavorite(index) {
-        const todo = todos[index];
+    function handleToggleFavorite(id) {
+        const todo = todos.find((val) => val.id === id);
+        // Joins the top of the group it moves into
+        updateTodo(id, {
+            favorite: !todo.favorite,
+            position: topPosition(todos),
+        });
+    }
 
-        if (user) {
-            // Update in Supabase
-            const { error } = await supabase
-                .from('todos')
-                .update({ favorite: !todo.favorite })
-                .eq('id', todo.id);
-
-            if (error) {
-                console.error('Error updating todo:', error);
-            } else {
-                let newTodoList = [...todos];
-                newTodoList[index] = { ...todo, favorite: !todo.favorite };
-                setTodos(newTodoList);
-            }
-        } else {
-            // Update in localStorage
-            let newTodoList = [...todos];
-            newTodoList[index] = { ...todo, favorite: !todo.favorite };
-            setTodos(newTodoList);
-            handleSaveToLocalStorage(newTodoList);
-        }
+    function handleReorderTodo(id, position) {
+        updateTodo(id, { position });
     }
 
     function handleToggleGame() {
@@ -276,13 +253,7 @@ function App() {
     // Show loading state while checking authentication
     if (loading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                color: 'var(--text-secondary)'
-            }}>
+            <div className="app-loading">
                 Loading...
             </div>
         );
@@ -303,17 +274,18 @@ function App() {
                 todos={todos}
             />
             <TodoInput handleAddTodo={handleAddTodo} />
-            {shouldShowGame && <RewardGame />}
+            {shouldShowGame && <RewardGame allDone={allTasksComplete} />}
             <TodoList
                 todos={todos}
                 selectedTab={selectedTab}
                 handleDeleteTodo={handleDeleteTodo}
                 handleCompleteTodo={handleCompleteTodo}
-                editingIndex={editingIndex}
+                editingId={editingId}
                 handleEditTodo={handleEditTodo}
                 handleStartEdit={handleStartEdit}
                 handleCancelEdit={handleCancelEdit}
                 handleToggleFavorite={handleToggleFavorite}
+                handleReorderTodo={handleReorderTodo}
             />
             <ConfirmationModal
                 isOpen={showDeleteModal}

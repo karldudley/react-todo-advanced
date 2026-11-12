@@ -11,7 +11,7 @@ const cardImages = [
     { src: '/img/sword-1.png', matched: false },
 ];
 
-function RewardGame() {
+function RewardGame({ allDone }) {
     const [cards, setCards] = useState([]);
     const [turns, setTurns] = useState(0);
     const [choiceOne, setChoiceOne] = useState(null);
@@ -105,6 +105,9 @@ function RewardGame() {
     return (
         <div className="reward-game">
             <div className="reward-container">
+                {allDone && (
+                    <h2 className="reward-title">All done! You earned a game.</h2>
+                )}
                 <div className="card-grid">
                     {cards.map((card) => (
                         <SingleCard

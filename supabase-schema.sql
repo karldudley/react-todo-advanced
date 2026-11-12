@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS todos (
     input TEXT NOT NULL,
     complete BOOLEAN DEFAULT false NOT NULL,
     favorite BOOLEAN DEFAULT false NOT NULL,
+    position DOUBLE PRECISION DEFAULT 0 NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -14,6 +15,9 @@ CREATE INDEX IF NOT EXISTS todos_user_id_idx ON todos(user_id);
 
 -- Create an index on created_at for ordering
 CREATE INDEX IF NOT EXISTS todos_created_at_idx ON todos(created_at DESC);
+
+-- Create an index on position for ordering
+CREATE INDEX IF NOT EXISTS todos_user_id_position_idx ON todos(user_id, position);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE todos ENABLE ROW LEVEL SECURITY;

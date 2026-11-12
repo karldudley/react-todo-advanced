@@ -1,20 +1,37 @@
 import { useState, useEffect } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 export default function TodoCard(props) {
-    const { 
-        todo, 
-        handleDeleteTodo, 
-        handleCompleteTodo, 
-        todoIndex,
-        editingIndex,
+    const {
+        todo,
+        handleDeleteTodo,
+        handleCompleteTodo,
+        editingId,
         handleEditTodo,
         handleStartEdit,
         handleCancelEdit,
         handleToggleFavorite
     } = props;
-    
+
     const [editInput, setEditInput] = useState(todo.input);
-    const isEditing = editingIndex === todoIndex;
+    const isEditing = editingId === todo.id;
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        setActivatorNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: todo.id, disabled: isEditing });
+
+    // Lock movement to the vertical axis
+    const style = {
+        transform: CSS.Translate.toString(transform && { ...transform, x: 0 }),
+        transition,
+    };
 
     useEffect(() => {
         if (isEditing) {
@@ -24,7 +41,7 @@ export default function TodoCard(props) {
 
     const handleSave = () => {
         if (editInput.trim()) {
-            handleEditTodo(todoIndex, editInput.trim());
+            handleEditTodo(todo.id, editInput.trim());
         }
     };
 
@@ -42,7 +59,34 @@ export default function TodoCard(props) {
     };
 
     return (
-        <div className={`todo-item ${todo.complete ? 'todo-complete' : ''} ${todo.favorite ? 'todo-favorite' : ''}`}>
+        <div
+            ref={setNodeRef}
+            style={style}
+            className={`todo-item ${todo.complete ? 'todo-complete' : ''} ${todo.favorite ? 'todo-favorite' : ''} ${isDragging ? 'todo-dragging' : ''}`}
+        >
+            <button
+                ref={setActivatorNodeRef}
+                {...attributes}
+                {...listeners}
+                className="drag-handle"
+                title="Drag to reorder"
+                aria-label={`Reorder ${todo.input}`}
+            >
+                <i className="fa-solid fa-grip-vertical" aria-hidden="true"></i>
+            </button>
+
+            <button
+                onClick={() => handleCompleteTodo(todo.id)}
+                className="todo-check"
+                title={todo.complete ? "Mark as incomplete" : "Mark as complete"}
+                aria-label={todo.complete ? "Mark as incomplete" : "Mark as complete"}
+                aria-pressed={todo.complete}
+            >
+                <span className="check-circle">
+                    <i className="fa-solid fa-check" aria-hidden="true"></i>
+                </span>
+            </button>
+
             <div className="todo-content">
                 {isEditing ? (
                     <input
@@ -54,49 +98,57 @@ export default function TodoCard(props) {
                         className="todo-text"
                     />
                 ) : (
-                    <div 
-                        onClick={() => !todo.complete && handleStartEdit(todoIndex)}
+                    <div
+                        onClick={() => !todo.complete && handleStartEdit(todo.id)}
                         className={`todo-text ${!todo.complete ? 'editable' : ''}`}
                         title={!todo.complete ? 'Click to edit' : ''}
                     >
                         {todo.input}
-                        {!todo.complete && <span className="edit-indicator">✏️</span>}
+                        {!todo.complete && (
+                            <i className="fa-solid fa-pen edit-indicator" aria-hidden="true"></i>
+                        )}
                     </div>
                 )}
             </div>
-            
+
             <div className="todo-actions">
                 {isEditing ? (
                     <>
-                        <button onClick={handleSave} className="btn-complete">
-                            ✓ Save
+                        <button
+                            onClick={handleSave}
+                            className="btn-icon btn-save"
+                            title="Save"
+                            aria-label="Save"
+                        >
+                            <i className="fa-solid fa-check" aria-hidden="true"></i>
                         </button>
-                        <button onClick={handleCancel} className="btn-delete">
-                            ✕ Cancel
+                        <button
+                            onClick={handleCancel}
+                            className="btn-icon btn-cancel"
+                            title="Cancel"
+                            aria-label="Cancel"
+                        >
+                            <i className="fa-solid fa-xmark" aria-hidden="true"></i>
                         </button>
                     </>
                 ) : (
                     <>
                         <button
-                            onClick={() => handleToggleFavorite(todoIndex)}
-                            className={`btn-star ${todo.favorite ? 'starred' : ''}`}
+                            onClick={() => handleToggleFavorite(todo.id)}
+                            className={`btn-icon btn-star ${todo.favorite ? 'starred' : ''}`}
                             title={todo.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                            aria-label={todo.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                            aria-pressed={todo.favorite}
                         >
-                            ★
+                            <i className={`${todo.favorite ? 'fa-solid' : 'fa-regular'} fa-star`} aria-hidden="true"></i>
                         </button>
                         <button
-                            onClick={() => handleCompleteTodo(todoIndex)}
-                            className="btn-complete"
-                            title={todo.complete ? "Mark as incomplete" : "Mark as complete"}
-                        >
-                            ✓ {todo.complete ? 'Undo' : 'Done'}
-                        </button>
-                        <button 
-                            onClick={() => handleDeleteTodo(todoIndex)} 
-                            className="btn-delete"
+                            onClick={() => handleDeleteTodo(todo.id)}
+                            className="btn-icon btn-delete"
                             title="Delete todo"
+                            aria-label="Delete todo"
                         >
-                            ✕ Delete
+                            <i className="fa-solid fa-trash" aria-hidden="true"></i>
                         </button>
                     </>
                 )}

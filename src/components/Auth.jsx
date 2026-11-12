@@ -38,8 +38,8 @@ export default function Auth({ onClose }) {
     return (
         <div className="auth-modal-overlay" onClick={onClose}>
             <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-                <button className="auth-close-btn" onClick={onClose} title="Close">
-                    ✕
+                <button className="auth-close-btn" onClick={onClose} title="Close" aria-label="Close">
+                    <i className="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
                 <h1 className="auth-brand">Funky To Do</h1>
                 <div className="auth-card">
