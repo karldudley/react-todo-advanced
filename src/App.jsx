@@ -291,7 +291,6 @@ function App() {
     // Always show main app
     return (
         <>
-            <h1 className="app-title">Funky Todo App</h1>
             <Header
                 todos={todos}
                 showGame={showGame}
